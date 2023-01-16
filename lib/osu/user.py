@@ -1,3 +1,4 @@
+from msilib.schema import Property
 import os
 from dataclasses import dataclass
 from pickle import NONE
@@ -10,6 +11,7 @@ load_dotenv()
 from lib import UserNotFound
 from lib.osu import get_data
 from .user_score import UserBestScore
+from .user_score import TopPlay
 
 class User:
     """
@@ -51,6 +53,9 @@ class User:
     
     End Of recent play
      '''
+
+
+   
     @property
     def game_mode(self) -> str:
         return self._game_mode

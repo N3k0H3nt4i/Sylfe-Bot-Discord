@@ -4,19 +4,23 @@ from pickle import TRUE
 from pydoc import describe
 from turtle import color
 
+import requests
 
 import discord
 from discord import Option, SlashCommandOptionType
+from discord.ext import commands
 from dotenv import load_dotenv
 
-from lib import OsuBot, Api, UserNotFound, RANKING_EMOJIS, UserScoreNotFound
+from lib import OsuBot, Api, UserNotFound, RANKING_EMOJIS, UserScoreNotFound, UserPlays
 from lib.errors import BeatmapNotFound
+from lib import User_Plays
 
 
 load_dotenv()
 intents = discord.Intents.default()
 
 bot_instance = OsuBot(intents=intents, help_command=None)
+bot = commands.Bot(command_prefix='+')
 API = Api(api_key=os.getenv("API_KEY"))
 
 
@@ -96,6 +100,72 @@ async def osu_player(
 
     embed.set_footer(text=f'{len(bot_instance.guilds)} guilds.')
     await ctx.respond(embed=embed)
+
+'''
+async def get_top_plays(ctx, name: str,mode: Option(
+            SlashCommandOptionType.string,
+            description="osu! game type.",
+            choices=["osu!", "osu!mania", "Taiko", "CtB"]
+        ) = "osu!"):
+    
+    try:
+        player = await API.get_osu_player(name=name, mode=mode)
+        best_score = await player.best_score
+    except UserNotFound:
+        return await ctx.respond(
+            embed=discord.Embed(title="User not found!", colour=discord.Colour.red()),
+            ephemeral=True
+        )
+
+
+    url = f"https://osu.ppy.sh/api/get_beatmaps?limit=100&k=YOUR_API_KEY&username={player.username}&mode={mode}"
+    response = requests.get(url)
+    return response.json()
+
+
+@bot_instance.slash_command(name='top', description='Check player top plays.')
+async def top100(ctx, name: str,mode: Option(
+            SlashCommandOptionType.string,
+            description="osu! game type.",
+            choices=["osu!", "osu!mania", "Taiko", "CtB"]
+        ) = "osu!"
+):
+  
+
+
+    top_plays = await get_top_plays(name=name, mode=mode)
+    for play in top_plays:
+        await ctx.send(play)
+
+'''
+
+
+@bot_instance.slash_command(name='top', description='Check player top plays.')
+async def top100(ctx, name: str,
+        mode: Option(
+            SlashCommandOptionType.string,
+            description="osu! game type.",
+            choices=["osu!", "osu!mania", "Taiko", "CtB"]
+        ) = "osu!"):
+
+
+    try:
+        player = await API.get_osu_player(name=name, mode=mode)
+    except UserNotFound:
+        return await ctx.respond(
+            embed=discord.Embed(title="User not found!", colour=discord.Colour.red()),
+            ephemeral=True
+        )
+
+
+
+
+    user = UserPlays(name=name, mode=mode)
+    top_plays = user.top_plays
+    embed = discord.Embed(title="Top 100 Plays")
+    for i, play in enumerate(top_plays):
+        embed.add_field(name=f"#{i+1}", value=play)
+    await ctx.send(embed=embed)
 
 
 
