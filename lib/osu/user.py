@@ -12,6 +12,8 @@ from lib import UserNotFound
 from lib.osu import get_data
 from .user_score import UserBestScore
 from .user_score import TopPlay
+from .user_score import UserRecentScore
+
 
 class User:
     """
@@ -31,29 +33,12 @@ class User:
         """
         self._game_mode = game_mode
         self._data = data
-        self.api_key =  api_key
+        self._api_key =  api_key
         self._join_date = None
-
-    '''
-     Recent Play
-     
- 
-    @property
-    def recent_play(self) -> str:
-       if not self._recent_play:
-        url = f"https://osu.ppy.sh/api/get_user_recent?u={self.user_id}&k={self.api_key}"
-        response = requests.get(url)
-        data = response.json()
-        if data:
-            self._recent_play = data[0]['beatmap_id']
-        else:
-            self._recent_play = "Not found"
-        return self._recent_play
-
-    
-    End Of recent play
-     '''
-
+  
+    """
+    User Profile 
+    """
 
    
     @property
@@ -63,7 +48,7 @@ class User:
     @property
     def user_id(self) -> int:
         return self._data.get('user_id')
-
+    
     @property
     def username(self) -> str:
         return self._data.get('username')
@@ -194,7 +179,7 @@ class User:
     @property
     def join_date(self) -> str:
         try: 
-           timestamp = int(self.data.get('join_date'))
+           timestamp = int(self.data.get('date'))
            join_date = datetime.datetime.fromtimestamp(timestamp).strftime("%B %d, %Y")
         except:
            join_date = "Not found"
@@ -214,11 +199,32 @@ class User:
     def profile_image_url(self) -> str:
         return f"http://s.ppy.sh/a/{self.user_id}"
 
+
+
+
+
+    '''
+    User Score
+    '''
     @property
     async def best_score(self) -> UserBestScore:
         obj = await UserBestScore.form_object(user_id=self.user_id, mode=self.game_mode, api_key=self._api_key)
 
         return obj
+    
+    '''
+    User Recent Score
+    '''
+
+    @property
+    async def recent_score(self) -> UserRecentScore:
+        obj = await UserRecentScore.form_object(user_id=self.user_id, mode=self.game_mode, api_key=self._api_key, beatmapset_id=self.beatmapset_id)
+
+        return obj
+
+
+
+
 
 
     @classmethod

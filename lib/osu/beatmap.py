@@ -49,7 +49,17 @@ class Beatmap:
             x = 0
 
         return x
+    
+    
+    @property
+    def beatmapset_id(self) -> int:
+        try:
+            x = int(round(float(self._data.get('beatmapset_id'))))
+        except TypeError:
+            x = 0
 
+        return x
+    
     @property
     def type(self) -> str:
         types = {
@@ -66,7 +76,7 @@ class Beatmap:
         try:
             x = types.get(str(self._data.get('approved')))
         except TypeError:
-            x = "WTF?"
+            x = "Bruh"
 
         return x
 
@@ -80,7 +90,7 @@ class Beatmap:
         return x
 
     @classmethod
-    async def form_object(cls, beatmap_id: int, mode: str, api_key: str):
+    async def form_object(cls, beatmapset_id, beatmap_id: int, mode: str, api_key: str):
         """
         :param beatmap_id: Betmap id to get data from
         :param mode: osu! game mode (osu!, Taiko etc.)
@@ -98,6 +108,7 @@ class Beatmap:
 
         params = {
             'k': api_key,
+            's': beatmapset_id,
             'b': beatmap_id,
             'm': mode,
             'type': 'id',
