@@ -218,10 +218,16 @@ class User:
 
     @property
     async def recent_score(self) -> UserRecentScore:
-        obj = await UserRecentScore.form_object(user_id=self.user_id, mode=self.game_mode, api_key=self._api_key, beatmapset_id=self.beatmapset_id)
+        obj = await UserRecentScore.form_object(user_id=self.user_id, mode=self.game_mode, api_key=self._api_key, title=self.title)
 
         return obj
 
+    @property
+    def title(self) -> str:
+        x = self._data.get('title')
+        if x is None:
+            return 'aq'
+        return x
 
 
 

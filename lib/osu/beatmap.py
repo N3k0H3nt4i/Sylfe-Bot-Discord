@@ -89,8 +89,19 @@ class Beatmap:
 
         return x
 
+    @property
+    def title(self) -> str:
+        x = self._data.get('title')
+        if x is None:
+            return 'aq'
+        return x
+
+
+
+
+
     @classmethod
-    async def form_object(cls, beatmapset_id, beatmap_id: int, mode: str, api_key: str):
+    async def form_object(cls, beatmap_id: int, mode: str, api_key: str):
         """
         :param beatmap_id: Betmap id to get data from
         :param mode: osu! game mode (osu!, Taiko etc.)
@@ -108,7 +119,6 @@ class Beatmap:
 
         params = {
             'k': api_key,
-            's': beatmapset_id,
             'b': beatmap_id,
             'm': mode,
             'type': 'id',

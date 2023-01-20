@@ -42,16 +42,15 @@ class UserRecentScore:
             x = 0
 
         return x
-    
-    @property
-    def beatmapset_id(self) -> int:
-        try:
-            x = int(self._data.get('beatmapset_id'))
-        except TypeError:
-            x = 0
 
+    @property
+    def title(self) -> str:
+        x = self._data.get('title')
+        if x is None:
+            return 'aq'
         return x
 
+    
     @property
     def score_id(self) -> int:
         try:
@@ -98,18 +97,18 @@ class UserRecentScore:
         return x
 
 
-
+    '''
     @property
     async def image(self) -> str:
        await UserRecentScore.form_object(beatmapset_id=self.beatmapset_id)
        return await f"https://b.ppy.sh/beatmaps/{self.beatmapset_id}l.jpg"
 
-       
+       '''
  
 
     @property
     async def map(self) -> Beatmap:
-        obj = await Beatmap.form_object(beatmap_id=self.beatmap_id, mode=self._game_mode, api_key=self._api_key)
+        obj = await Beatmap.form_object(beatmap_id=self.beatmap_id, mode=self._game_mode, api_key=self._api_key, title=self.title)
         return obj
 
     @classmethod

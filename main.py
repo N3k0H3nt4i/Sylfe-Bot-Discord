@@ -11,12 +11,12 @@ from discord import Option, SlashCommandOptionType
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from lib import OsuBot, Api, UserNotFound, RANKING_EMOJIS, UserScoreNotFound, UserPlays
+from lib import OsuBot, Api, UserNotFound, RANKING_EMOJIS, UserScoreNotFound
 from lib.errors import BeatmapNotFound
 
 
 
-
+    
 
 
 
@@ -120,7 +120,6 @@ async def osu_player(
         player = await API.get_osu_player(name=name, mode=mode)
         recent_score = await player.recent_score
         recent_score_map = await recent_score.map
-        beatmapset_id = await recent_score.beatmapset_id
     except UserNotFound:
         return await ctx.respond(
             embed=discord.Embed(title="User not found!", colour=discord.Colour.red()),
@@ -141,7 +140,7 @@ async def osu_player(
 
     
     embed = discord.Embed(
-        title=f'{player.username} **{player.country}** :flag_{player.country.lower()}: - Lvl. {player.level}',
+        title=f'{player.username} **Played** : {player.title}',
         timestamp=discord.utils.utcnow(),
         description=f"""
                     『』User Recent Score『』
@@ -149,12 +148,10 @@ async def osu_player(
             ｜ With **{recent_score.misses}**:x: and {recent_score.max_combo} max combo
             ｜ `PP:` **{recent_score.pp}** 
         """,
-        colour=discord.Colour.pink(),
-        ephemeral=True
+  
+            
     )
     
-    map_image_url = 'https://b.ppy.sh/thumb/' + beatmapset_id + 'l.jpg'
-    embed.set_thumbnail(url=map_image_url)
     embed.set_footer(text=f'{len(bot_instance.guilds)} guilds.')
     await ctx.respond(embed=embed)
 
